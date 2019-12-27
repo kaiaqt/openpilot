@@ -63,6 +63,13 @@ def get_can_parser(CP):
     signals.append(("MAIN_ON", "DSU_CRUISE", 0))
     signals.append(("SET_SPEED", "DSU_CRUISE", 0))
     checks.append(("DSU_CRUISE", 5))
+
+  elif CP.carFingerprint == CAR.LEXUS_IS350:
+    signals.append(("MAIN_ON", "PCM_CRUISE_ALT", 0))
+    signals.append(("SET_SPEED", "PCM_CRUISE_ALT", 0))
+    signals.append(("CRUISE_STATE", "PCM_CRUISE_ALT", 0))
+    checks.append(("PCM_CRUISE_ALT", 1))
+
   else:
     signals.append(("MAIN_ON", "PCM_CRUISE_2", 0))
     signals.append(("SET_SPEED", "PCM_CRUISE_2", 0))
@@ -169,6 +176,8 @@ class CarState():
     self.gear_shifter = parse_gear_shifter(can_gear, self.shifter_values)
     if self.CP.carFingerprint == CAR.LEXUS_IS:
       self.main_on = cp.vl["DSU_CRUISE"]['MAIN_ON']
+    elif self.CP.carFingerprint == CAR.LEXUS_IS350:
+      self.main_on = cp.vl["PCM_CRUISE_ALT"]['MAIN_ON']
     else:
       self.main_on = cp.vl["PCM_CRUISE_2"]['MAIN_ON']
     self.left_blinker_on = cp.vl["STEERING_LEVERS"]['TURN_SIGNALS'] == 1
@@ -187,6 +196,10 @@ class CarState():
     self.user_brake = 0
     if self.CP.carFingerprint == CAR.LEXUS_IS:
       self.v_cruise_pcm = cp.vl["DSU_CRUISE"]['SET_SPEED']
+      self.low_speed_lockout = False
+    elif self.CP.carFingerprint == CAR.LEXUS_IS350:
+      self.v_cruise_pcm = cp.vl["PCM_CRUISE_ALT"]['SET_SPEED']
+      self.pcm_acc_status = cp.vl["PCM_CRUISE_ALT"]['CRUISE_STATE']
       self.low_speed_lockout = False
     else:
       self.v_cruise_pcm = cp.vl["PCM_CRUISE_2"]['SET_SPEED']

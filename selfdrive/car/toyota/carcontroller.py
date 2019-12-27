@@ -210,6 +210,14 @@ class CarController():
       else:
         can_sends.append(create_accel_command(self.packer, 0, pcm_cancel_cmd, False, lead))
 
+      if pcm_cancel_cmd and CS.CP.carFingerprint == CAR.LEXUS_IS350:
+        can_sends.append(create_acc_cancel_command(self.packer))
+      elif CS.CP.openpilotLongitudinalControl:
+        can_sends.append(create_accel_command(self.packer, apply_accel, pcm_cancel_cmd, self.standstill_req, lead))
+      else:
+        can_sends.append(create_accel_command(self.packer, 0, pcm_cancel_cmd, False, lead))
+
+
     if (frame % 2 == 0) and (CS.CP.enableGasInterceptor):
         # send exactly zero if apply_gas is zero. Interceptor will send the max between read value and apply_gas.
         # This prevents unexpected pedal range rescaling
